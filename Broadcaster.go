@@ -1,6 +1,9 @@
 package telegraph
 
-import "container/list"
+import (
+	"container/list"
+	"time"
+)
 
 //Broadcaster ...
 type Broadcaster struct {
@@ -50,14 +53,15 @@ func (instance LinkedBroadcaster) Notify(notification interface{}) {
 		channel := e.Value.(chan interface{})
 		select {
 		case channel <- notification:
-		default:
+		case <-time.After(1 * time.Nanosecond):
 		}
 	}
 }
 
 //Unsubscribe ...
 func (instance LinkedBroadcaster) Unsubscribe(subscription *list.Element) {
-	instance.listeners.Remove(subscription)
+	channel := instance.listeners.Remove(subscription)
+	close(channel.(chan interface{}))
 }
 
 //Subscription ...

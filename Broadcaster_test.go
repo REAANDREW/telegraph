@@ -62,5 +62,20 @@ var _ = Describe("Broadcaster", func() {
 			Expect(something.Info).To(Equal(expectedInfo))
 			Expect(something.Score).To(Equal(expectedScore))
 		})
+
+		It("Closes a range on unsubscribe", func() {
+			broadcaster := NewLinkedBroadcaster()
+			subscription := broadcaster.Listen()
+			go func() {
+				for i := 0; i < 10; i++ {
+					broadcaster.Notify(i + 1)
+				}
+			}()
+			for i := range subscription.Channel {
+				if i.(int) == 10 {
+					subscription.RemoveFrom(broadcaster)
+				}
+			}
+		})
 	})
 })
