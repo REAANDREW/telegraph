@@ -2,7 +2,13 @@ package telegraph
 
 import (
 	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
+
+type Something struct {
+	Score int
+	Info  string
+}
 
 var _ = Describe("Broadcaster", func() {
 	Describe("LinkedBroadcaster", func() {
@@ -37,6 +43,24 @@ var _ = Describe("Broadcaster", func() {
 				broadcaster.Notify(struct{}{})
 			}()
 			<-subscriptionTwo.Channel
+		})
+
+		It("Publish a struct", func() {
+			const expectedInfo = "BOOM"
+			const expectedScore = 5
+
+			broadcaster := NewLinkedBroadcaster()
+			subscriptionOne := broadcaster.Listen()
+			go func() {
+				broadcaster.Notify(Something{
+					Info:  expectedInfo,
+					Score: expectedScore,
+				})
+			}()
+			item := <-subscriptionOne.Channel
+			something := item.(Something)
+			Expect(something.Info).To(Equal(expectedInfo))
+			Expect(something.Score).To(Equal(expectedScore))
 		})
 	})
 })
