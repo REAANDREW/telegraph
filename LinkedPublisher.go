@@ -35,7 +35,7 @@ func (instance LinkedPublisher) Publish(notification interface{}) {
 		channel := e.Value.(chan interface{})
 		select {
 		case channel <- notification:
-		case <-time.After(1 * time.Nanosecond):
+		case <-time.After(1 * time.Second):
 		}
 	}
 }
