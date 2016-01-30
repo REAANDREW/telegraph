@@ -89,7 +89,7 @@ maintain encapsulation
 
 ### Subscribing
 
-```golang
+```go
 broadcaster := NewLinkedPublisher()
 subscription := broadcaster.Subscribe()
 go func() {
@@ -100,7 +100,7 @@ Expect(<-subscription.Channel).To(Equal(1))
 
 ### Unsubscribing
 
-```golang
+```go
 broadcaster := NewLinkedPublisher()
 subscriptionOne := broadcaster.Subscribe()
 subscriptionTwo := broadcaster.Subscribe()
@@ -113,7 +113,7 @@ Expect(<-subscriptionTwo.Channel).To(Equal(2))
 
 ### Non blocking publications
 
-```golang
+```go
 broadcaster := NewLinkedPublisher()
 subscriptionOne := broadcaster.Subscribe()
 if subscriptionOne.Channel != nil {
@@ -128,7 +128,7 @@ Expect(<-subscriptionTwo.Channel).To(Equal(3))
 
 ### Ending a range after Unsubscribing
 
-```golang
+```go
 broadcaster := NewLinkedPublisher()
 subscription := broadcaster.Subscribe()
 go func() {
