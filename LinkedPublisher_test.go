@@ -11,24 +11,24 @@ type Something struct {
 }
 
 var _ = Describe("LinkedPublisher", func() {
-	It("Accept subscriptions", func() {
+	It("Subscribing", func() {
 		broadcaster := NewLinkedPublisher()
 		subscription := broadcaster.Subscribe()
 		go func() {
-			broadcaster.Publish(struct{}{})
+			broadcaster.Publish(1)
 		}()
-		<-subscription.Channel
+		Expect(<-subscription.Channel).To(Equal(1))
 	})
 
-	It("Remove subscriptions", func() {
+	It("Unsubscribing", func() {
 		broadcaster := NewLinkedPublisher()
 		subscriptionOne := broadcaster.Subscribe()
 		subscriptionTwo := broadcaster.Subscribe()
 		subscriptionOne.RemoveFrom(broadcaster)
 		go func() {
-			broadcaster.Publish(struct{}{})
+			broadcaster.Publish(2)
 		}()
-		<-subscriptionTwo.Channel
+		Expect(<-subscriptionTwo.Channel).To(Equal(2))
 	})
 
 	It("Non blocking publications", func() {
@@ -39,9 +39,9 @@ var _ = Describe("LinkedPublisher", func() {
 		}
 		subscriptionTwo := broadcaster.Subscribe()
 		go func() {
-			broadcaster.Publish(struct{}{})
+			broadcaster.Publish(3)
 		}()
-		<-subscriptionTwo.Channel
+		Expect(<-subscriptionTwo.Channel).To(Equal(3))
 	})
 
 	It("Publish a struct", func() {
