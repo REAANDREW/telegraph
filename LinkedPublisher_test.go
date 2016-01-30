@@ -10,36 +10,36 @@ type Something struct {
 	Info  string
 }
 
-var _ = Describe("LinkedBroadcaster", func() {
+var _ = Describe("LinkedPublisher", func() {
 	It("Accept subscriptions", func() {
-		broadcaster := NewLinkedBroadcaster()
-		subscription := broadcaster.Listen()
+		broadcaster := NewLinkedPublisher()
+		subscription := broadcaster.Subscribe()
 		go func() {
-			broadcaster.Notify(struct{}{})
+			broadcaster.Publish(struct{}{})
 		}()
 		<-subscription.Channel
 	})
 
 	It("Remove subscriptions", func() {
-		broadcaster := NewLinkedBroadcaster()
-		subscriptionOne := broadcaster.Listen()
-		subscriptionTwo := broadcaster.Listen()
+		broadcaster := NewLinkedPublisher()
+		subscriptionOne := broadcaster.Subscribe()
+		subscriptionTwo := broadcaster.Subscribe()
 		subscriptionOne.RemoveFrom(broadcaster)
 		go func() {
-			broadcaster.Notify(struct{}{})
+			broadcaster.Publish(struct{}{})
 		}()
 		<-subscriptionTwo.Channel
 	})
 
 	It("Non blocking publications", func() {
-		broadcaster := NewLinkedBroadcaster()
-		subscriptionOne := broadcaster.Listen()
+		broadcaster := NewLinkedPublisher()
+		subscriptionOne := broadcaster.Subscribe()
 		if subscriptionOne.Channel != nil {
 			//Do somthing
 		}
-		subscriptionTwo := broadcaster.Listen()
+		subscriptionTwo := broadcaster.Subscribe()
 		go func() {
-			broadcaster.Notify(struct{}{})
+			broadcaster.Publish(struct{}{})
 		}()
 		<-subscriptionTwo.Channel
 	})
@@ -48,10 +48,10 @@ var _ = Describe("LinkedBroadcaster", func() {
 		const expectedInfo = "BOOM"
 		const expectedScore = 5
 
-		broadcaster := NewLinkedBroadcaster()
-		subscriptionOne := broadcaster.Listen()
+		broadcaster := NewLinkedPublisher()
+		subscriptionOne := broadcaster.Subscribe()
 		go func() {
-			broadcaster.Notify(Something{
+			broadcaster.Publish(Something{
 				Info:  expectedInfo,
 				Score: expectedScore,
 			})
@@ -63,11 +63,11 @@ var _ = Describe("LinkedBroadcaster", func() {
 	})
 
 	It("Closes a range on unsubscribe", func() {
-		broadcaster := NewLinkedBroadcaster()
-		subscription := broadcaster.Listen()
+		broadcaster := NewLinkedPublisher()
+		subscription := broadcaster.Subscribe()
 		go func() {
 			for i := 0; i < 10; i++ {
-				broadcaster.Notify(i + 1)
+				broadcaster.Publish(i + 1)
 			}
 		}()
 		for i := range subscription.Channel {
