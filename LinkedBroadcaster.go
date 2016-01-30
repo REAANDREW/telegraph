@@ -5,25 +5,6 @@ import (
 	"time"
 )
 
-//Broadcaster ...
-type Broadcaster struct {
-	listeners []chan interface{}
-}
-
-//Listen ...
-func (instance *Broadcaster) Listen() <-chan interface{} {
-	var newChannel = make(chan interface{})
-	instance.listeners = append(instance.listeners, newChannel)
-	return newChannel
-}
-
-//Notify ...
-func (instance *Broadcaster) Notify(notification interface{}) {
-	for _, listener := range instance.listeners {
-		listener <- notification
-	}
-}
-
 //LinkedBroadcaster ...
 type LinkedBroadcaster struct {
 	listeners *list.List
